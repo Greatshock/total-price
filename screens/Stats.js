@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 
-export default function History() {
+export default function Stats() {
     return (
-        <View styles={styles.container}>
-            <Text>History</Text>
+        <View style={styles.container}>
+            <Text>Stats</Text>
         </View>
     )
 }
