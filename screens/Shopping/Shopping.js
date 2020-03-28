@@ -1,17 +1,37 @@
 import React from 'react';
-import { Button, Text, TextInput, View, Platform, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, Zocial, Entypo } from '@expo/vector-icons';
+import { Button as DefaultButton, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { Icon, Button, Input, Overlay } from 'react-native-elements';
 import { styles } from './styles';
+import DiscountForm from './DiscountForm/DiscountForm';
+
+const PRICE_LIMIT = 8000;
+const CURRENCY = '₽';
+const INCREMENT_AMOUNT_BUTTONS = [
+    {increment: 1},
+    {increment: 3},
+    {increment: 5},
+];
+
+const getTotalPriceSeverityColor = (price, limit) => {
+   const percentage = (price / limit * 100).toPrecision(1);
+   if (percentage < 30) {
+       return 'lightgreen';
+   } else if (percentage < 50) {
+       return 'yellow';
+   } else if (percentage < 75) {
+       return 'orange';
+   } else {
+       return 'red';
+   }
+};
 
 export default function Shopping() {
-    // Total price for the current shopping session
     const [totalPrice, setTotalPrice] = React.useState(0);
-    // Price for the item
+    const [totalPriceSeverityColor, setTotalPriceSeverityColor] = React.useState(getTotalPriceSeverityColor(0, PRICE_LIMIT));
     const [unitPrice, setUnitPrice] = React.useState('0');
-    // Number of items with current unitPrice
     const [amount, setAmount] = React.useState('1');
-    // Price to be added (unitPrice * amount)
     const [price, setPrice] = React.useState(0);
+    const [discountPopoverVisible, setDiscountPopoverVisible] = React.useState(false);
 
     const unitPriceInput = React.useRef(null);
 
@@ -19,6 +39,7 @@ export default function Shopping() {
     React.useEffect(() => {
         setUnitPrice('');
         setAmount('');
+        setTotalPriceSeverityColor(getTotalPriceSeverityColor(totalPrice, PRICE_LIMIT));
     }, [totalPrice]);
 
     // Whenever unit price or amount changes, recalculate price
@@ -32,15 +53,18 @@ export default function Shopping() {
     };
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <ScrollView style={styles.container}
+                    contentContainerStyle={styles.content}
+                    keyboardShouldPersistTaps='handled'>
 
             <Text style={styles.totalPriceTitle}>Total Price</Text>
-            <Text style={styles.totalPrice} numberOfLines={1}>{totalPrice}</Text>
+            <Text style={[styles.totalPrice, { color: totalPriceSeverityColor }]} numberOfLines={1}>{totalPrice}</Text>
 
             <KeyboardAvoidingView style={styles.column} behavior='padding'>
-                <TextInput
-                    style={styles.input}
+                <Input
                     ref={unitPriceInput}
+                    containerStyle={{ minWidth: 100 }}
+                    inputStyle={{ textAlign: 'center' }}
                     placeholder='Unit price'
                     keyboardType='numeric'
                     clearTextOnFocus={true}
@@ -49,10 +73,11 @@ export default function Shopping() {
                     onChangeText={newPrice => setUnitPrice(newPrice)}
                 />
 
-                <Entypo style={{marginTop: 8}} name='cross' size={20} />
+                <Icon containerStyle={{ marginTop: 16 }} type='entypo' name='cross' size={25} color='#1990ff' />
 
-                <TextInput
-                    style={styles.input}
+                <Input
+                    containerStyle={{ minWidth: 100, marginBottom: 20 }}
+                    inputStyle={{ textAlign: 'center' }}
                     placeholder='Amount'
                     keyboardType='numeric'
                     clearTextOnFocus={true}
@@ -61,58 +86,83 @@ export default function Shopping() {
                     onChangeText={newAmount => setAmount(newAmount)}
                 />
 
-                <View style={[styles.incrementButtonsContainer, styles.row]}>
+                <View style={styles.row}>
                     {INCREMENT_AMOUNT_BUTTONS.map(button => (
                         <Button
+                            containerStyle={{ marginHorizontal: 8 }}
                             key={button.increment}
+                            type='outline'
                             title={`+${button.increment}`}
                             onPress={() => incrementAmount(button.increment)}
                         />
                     ))}
                 </View>
-            </KeyboardAvoidingView>
 
-            <View style={{ opacity: unitPrice ? 1 : 0.5 }}>
-                <TouchableOpacity
-                    style={styles.submitButton}
-                    disabled={!unitPrice}
+                <Button
+                    containerStyle={{ marginTop: 20, width: 200 }}
+                    buttonStyle={{ borderRadius: 40 }}
+                    titleStyle={{ fontSize: 30, marginLeft: 8 }}
+                    title={`${price} ${CURRENCY}`}
+                    textStyle={{ fontSize: 20 }}
+                    disabled={price + totalPrice >= PRICE_LIMIT}
+                    icon={<Icon
+                        containerStyle={{ height: 40 }}
+                        type='ionicon'
+                        name={Platform.OS === 'ios' ? 'ios-add' : 'md-add'}
+                        color='#fff'
+                        size={40}
+                    />}
                     onPress={() => {
                         setTotalPrice(totalPrice + price);
                         unitPriceInput.current && unitPriceInput.current.focus();
                     }}
-                >
-                    <Ionicons size={40} name={Platform.OS === 'ios' ? 'ios-add' : 'md-add'} />
-                    <Text style={{ marginLeft: 8, fontSize: 32 }} numberOfLines={1}>
-                        {price} {CURRENCY}
-                    </Text>
-                </TouchableOpacity>
-            </View>
+                />
+            </KeyboardAvoidingView>
 
-            <Button title='I have a discount' onPress={() => {}} />
+            <DefaultButton title='I have a discount' onPress={() => setDiscountPopoverVisible(true)} />
+            <Overlay
+                isVisible={discountPopoverVisible}
+                windowBackgroundColor="rgba(255, 255, 255, .7)"
+                width="auto"
+                height="auto"
+            >
+                <DiscountForm
+                    onCancel={() => setDiscountPopoverVisible(false)}
+                    onSubmit={({ discount, units }) => {
+                        if (units === '%') {
+                            setTotalPrice(totalPrice * discount / 100)
+                        } else { // User-specified currency
+                            setTotalPrice(totalPrice - discount)
+                        }
 
-            <View style={styles.entries}>
-                <Text> TODO Entries</Text>
-            </View>
+                        setDiscountPopoverVisible(false);
+                    }}
+                />
+            </Overlay>
+
+            {/*<View style={styles.entries}>*/}
+            {/*    <Text> TODO Entries</Text>*/}
+            {/*</View>*/}
 
             <View style={styles.sessionControls}>
-                <MaterialCommunityIcons size={40} name='restart' />
                 <Button
                     title='Restart'
+                    type='outline'
                     disabled={!totalPrice}
+                    icon={<Icon type='material-community' name='restart' size={40} />}
                     onPress={() => setTotalPrice(0)}
                 />
 
-                <Zocial size={30} name='cart' />
-                <Button title='Stop Shopping' onPress={() => {}} />
+                <Button
+                    containerStyle={{marginLeft: 20}}
+                    title='Stop Shopping'
+                    icon={<Icon type='zocial' name='cart' size={30} />}
+                    onPress={() => {
+
+                    }}
+                />
             </View>
 
         </ScrollView>
     )
 }
-
-const CURRENCY = '₽';
-const INCREMENT_AMOUNT_BUTTONS = [
-    { increment: 1 },
-    { increment: 3 },
-    { increment: 5 },
-];
