@@ -1,22 +1,12 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from '../../common/colors';
 
 export const styles = StyleSheet.create({
-    content: {
-        padding: 20,
+    container: {
         display: 'flex',
+        paddingVertical: 20,
+        paddingHorizontal: 40,
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    column: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    discountPopover: {
-        display: 'flex',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+        backgroundColor: Colors.White
     }
 });
