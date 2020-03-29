@@ -75,7 +75,12 @@ export default class App extends React.Component {
                         fontsLoaded
                             ?
                             <NavigationContainer>
-                                <RootTab.Navigator>
+                                <RootTab.Navigator
+                                    tabBarOptions={{
+                                        activeTintColor: Colors.ScienceBlue,
+                                        inactiveTintColor: Colors.NiagaraGray,
+                                    }}
+                                >
                                     <RootTab.Screen
                                         name='Shopping'
                                         component={Shopping}
