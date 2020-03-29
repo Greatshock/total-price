@@ -1,11 +1,11 @@
 import * as Font from 'expo-font';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, SafeAreaView, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { Settings, Shopping, Stats } from './screens';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { ThemeProvider } from 'react-native-elements';
 import { Colors } from './common/colors';
 
