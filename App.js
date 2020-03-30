@@ -5,7 +5,7 @@ import { Platform, SafeAreaView, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { Settings, Shopping, Stats } from './screens';
+import { Settings, Shopping } from './screens';
 import { ThemeProvider } from 'react-native-elements';
 import { Colors } from './common/colors';
 
@@ -88,17 +88,6 @@ export default class App extends React.Component {
                                             tabBarIcon: ({ color, size }) => (
                                                 Platform.OS === 'ios'
                                                     ? <Ionicons name='ios-basket' color={color} size={size} />
-                                                    : <MaterialIcons name={'shopping-cart'} color={color} size={size} />
-                                            )
-                                        }}
-                                    />
-                                    <RootTab.Screen
-                                        name='Stats'
-                                        component={Stats}
-                                        options={{
-                                            tabBarIcon: ({ color, size }) => (
-                                                Platform.OS === 'ios'
-                                                    ? <Ionicons name='ios-stats' color={color} size={size} />
                                                     : <MaterialIcons name={'shopping-cart'} color={color} size={size} />
                                             )
                                         }}

@@ -1,8 +1,7 @@
 import React from 'react';
-import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
 import { Button, Icon, Input, Text } from 'react-native-elements';
-import { Colors } from '../../common/colors';
-import { styles } from './styles';
+import { Colors } from '../common/colors';
 
 const PRICE_LIMIT = 8000;
 const CURRENCY = '₽';
@@ -21,7 +20,7 @@ const getTotalPriceSeverityColor = (price, limit) => {
     }
 };
 
-export default function Shopping() {
+export const Shopping = (props) => {
     const [totalPrice, setTotalPrice] = React.useState(0);
     const [totalPriceSeverityColor, setTotalPriceSeverityColor] = React.useState(getTotalPriceSeverityColor(0, PRICE_LIMIT));
     const [price, setPrice] = React.useState(0);
@@ -151,5 +150,14 @@ export default function Shopping() {
             </View>
         </TouchableWithoutFeedback>
     )
-}
+};
 
+const styles = StyleSheet.create({
+    container: {
+        display: 'flex',
+        paddingVertical: 20,
+        paddingHorizontal: 40,
+        flex: 1,
+        backgroundColor: Colors.White
+    }
+});
