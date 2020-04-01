@@ -3,9 +3,11 @@ import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, View, StyleSh
 import { Button, Icon, Input, Text } from 'react-native-elements';
 import { Colors } from '../common/colors';
 
-const PRICE_LIMIT = 8000;
 const CURRENCY = '₽';
 const INCREMENT_AMOUNT_TYPES = [1, 3, 5];
+
+const PRICE_LIMIT = 8000;
+const PRICE_LIMIT_WARNING_THRESHOLD = PRICE_LIMIT * 0.9;
 
 const getTotalPriceSeverityColor = (price, limit) => {
     const percentage = Math.round(price / limit * 100);
@@ -43,7 +45,9 @@ export const Shopping = (props) => {
         setTotalPriceSeverityColor(getTotalPriceSeverityColor(totalPrice, PRICE_LIMIT));
 
         if (totalPrice >= PRICE_LIMIT) {
-            alert(`You have reached your limit of ${PRICE_LIMIT} ${CURRENCY}`)
+            alert(`You have reached your limit of ${PRICE_LIMIT} ${CURRENCY}`);
+        } else if (totalPrice >= PRICE_LIMIT_WARNING_THRESHOLD) {
+            alert(`Caution! You are close to your price limit of ${PRICE_LIMIT} ${CURRENCY}`);
         }
     }, [totalPrice]);
 
@@ -136,7 +140,7 @@ export const Shopping = (props) => {
 
                     <Button
                         type='clear'
-                        containerStyle={{ marginLeft: 20, minWidth: 140}}
+                        containerStyle={{ marginLeft: 20, minWidth: 140 }}
                         title='Finish'
                         icon={<Icon
                             type='material-community'

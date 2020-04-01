@@ -4,6 +4,7 @@ import { Input, Text } from 'react-native-elements';
 import { Colors } from '../common/colors';
 import { MSwitch } from '../components';
 import RNPickerSelect from 'react-native-picker-select';
+import { StoreContext } from '../Store';
 
 const CURRENCIES = [
     { label: 'USD – $', value: '$' },
@@ -14,6 +15,8 @@ const CURRENCIES = [
 const CURRENCY_PLACEHOLDER = { label: 'Select...', value: null, color: Colors.NiagaraGray };
 
 export const Settings = (props) => {
+    const { store } = React.useContext(StoreContext);
+
     const [taxIncluded, setTaxIncluded] = React.useState(true);
     const [taxRate, setTaxRate] = React.useState(null);
     const [currency, setCurrency] = React.useState(null);
@@ -23,7 +26,6 @@ export const Settings = (props) => {
         const numericValue = parseFloat(newValue);
 
         if (isNaN(numericValue) || numericValue > 100) {
-            alert('Invalid tax rate!');
             setTaxRate('');
         } else {
             setTaxRate(newValue);
@@ -34,7 +36,7 @@ export const Settings = (props) => {
         <ScrollView style={styles.container} keyboardShouldPersistTaps='handled'>
             <View style={styles.row}>
                 <Text style={styles.label}>VAT</Text>
-                <Text style={styles.description}>
+                <Text style={[styles.description, {marginBottom: 8}]}>
                     Value-added tax. Turn off if your local shops do not include it in prices.
                 </Text>
 
@@ -49,17 +51,17 @@ export const Settings = (props) => {
                 {
                     !taxIncluded
                     &&
-                    <View style={[styles.row, {marginTop: 8}]}>
+                    <View style={{marginTop: 16}}>
                         <Text style={styles.description}>
                             Specify VAT rate. App will take it into account during total price calculation.
                         </Text>
 
                         <View style={styles.inputView}>
-                            <Text style={[styles.inputPrefix, !taxRate && {color: 'lightgray'}]}>{currency}</Text>
+                            <Text style={[styles.inputPrefix, !taxRate && {color: Colors.MischkaGray}]}>%</Text>
                             <Input
-                                inputContainerStyle={{borderBottomWidth: 0}}
+                                inputContainerStyle={{borderBottomWidth: 0, padding: 0}}
                                 placeholderTextColor='lightgray'
-                                placeholder='20%'
+                                placeholder='20'
                                 keyboardType='numeric'
                                 numberOfLines={1}
                                 value={taxRate}
@@ -75,6 +77,7 @@ export const Settings = (props) => {
                 <Text style={styles.description}>Your local currency symbol. All prices will include it.</Text>
 
                 <RNPickerSelect
+                    style={pickerSelectStyles}
                     placeholder = {CURRENCY_PLACEHOLDER}
                     value={currency}
                     onValueChange={value => setCurrency(value)}
@@ -85,11 +88,17 @@ export const Settings = (props) => {
             <View style={styles.row}>
                 <Text style={styles.label}>Total Price Limit</Text>
                 <Text style={styles.description}>
-                    App will alert you when you reach the price limit.
+                    App will alert you when you are close or reach the price limit.
                 </Text>
 
                 <View style={styles.inputView}>
-                    <Text style={[styles.inputPrefix, !taxRate && {color: 'lightgray'}]}>%</Text>
+                    {
+                        currency
+                        &&
+                        <Text style={[styles.inputPrefix, !taxRate && { color: Colors.MischkaGray }]}>
+                            {currency}
+                        </Text>
+                    }
                     <Input
                         inputContainerStyle={{borderBottomWidth: 0}}
                         placeholder='7000'
@@ -114,8 +123,7 @@ const styles = StyleSheet.create({
     },
     row: {
         marginBottom: 32,
-        display: 'flex',
-        flex: 1
+        display: 'flex'
     },
     label: {
         marginBottom: 8,
@@ -123,9 +131,9 @@ const styles = StyleSheet.create({
         color: Colors.MagnetBlack
     },
     description: {
-        marginBottom: 8,
+        marginBottom: 4,
         fontSize: 14,
-        color: Colors.PigeonGray
+        color: Colors.NiagaraGray
     },
     inputView: {
         display: 'flex',
@@ -137,6 +145,25 @@ const styles = StyleSheet.create({
     inputPrefix: {
         paddingRight: 4,
         fontSize: 18,
-        color: 'lightgray'
+        color: Colors.MagnetBlack
+    }
+});
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontFamily: 'Roboto',
+        fontSize: 18,
+        minHeight: 32,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.FogGray,
+        color: Colors.MagnetBlack
+    },
+    inputAndroid: {
+        fontFamily: 'Roboto',
+        fontSize: 18,
+        minHeight: 32,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.FogGray,
+        color: Colors.MagnetBlack
     }
 });

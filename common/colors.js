@@ -8,6 +8,7 @@ export const Colors = {
     NiagaraGray: '#8F9EB4',
     PeriwinkleGray: '#B4BFCF',
     FogGray: '#D5DCE3',
+    MischkaGray: '#CBD2DC',
     SmokeGray: '#EDF1F5',
     CloudGray: '#F5F5FA',
     White: '#FFFFFF',
