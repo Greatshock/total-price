@@ -81,7 +81,6 @@ export class StoreProvider extends React.Component {
     };
 
     handleAppStateChange = async nextAppState => {
-        console.log(nextAppState);
         if (nextAppState.match(/inactive|background/)) {
             await this.saveStateToAsyncStorage();
         }
