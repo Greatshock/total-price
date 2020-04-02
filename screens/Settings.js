@@ -4,7 +4,7 @@ import { Input, Text } from 'react-native-elements';
 import { Colors } from '../common/colors';
 import { MSwitch } from '../components';
 import RNPickerSelect from 'react-native-picker-select';
-import { StoreContext } from '../Store';
+import { StoreContext, ACTION_TYPES } from '../Store';
 
 const CURRENCIES = [
     { label: 'USD – $', value: '$' },
@@ -15,22 +15,8 @@ const CURRENCIES = [
 const CURRENCY_PLACEHOLDER = { label: 'Select...', value: null, color: Colors.NiagaraGray };
 
 export const Settings = (props) => {
-    const { store } = React.useContext(StoreContext);
-
-    const [taxIncluded, setTaxIncluded] = React.useState(true);
-    const [taxRate, setTaxRate] = React.useState(null);
-    const [currency, setCurrency] = React.useState(null);
-    const [limit, setLimit] = React.useState(null);
-
-    const handleTaxRateChange = newValue => {
-        const numericValue = parseFloat(newValue);
-
-        if (isNaN(numericValue) || numericValue > 100) {
-            setTaxRate('');
-        } else {
-            setTaxRate(newValue);
-        }
-    };
+    const { state, dispatch } = React.useContext(StoreContext);
+    const { limit, currency, vatIncluded, vatValue } = state;
 
     return (
         <ScrollView style={styles.container} keyboardShouldPersistTaps='handled'>
@@ -44,12 +30,12 @@ export const Settings = (props) => {
                     containerStyle={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
                     titleStyle={{ fontSize: 18 }}
                     title='Included'
-                    value={taxIncluded}
-                    onValueChange={value => setTaxIncluded(value)}
+                    value={vatIncluded}
+                    onValueChange={value => dispatch({ type: ACTION_TYPES.VAT_INCLUDED_CHANGE, payload: value })}
                 />
 
                 {
-                    !taxIncluded
+                    !vatIncluded
                     &&
                     <View style={{marginTop: 16}}>
                         <Text style={styles.description}>
@@ -57,15 +43,15 @@ export const Settings = (props) => {
                         </Text>
 
                         <View style={styles.inputView}>
-                            <Text style={[styles.inputPrefix, !taxRate && {color: Colors.MischkaGray}]}>%</Text>
+                            <Text style={[styles.inputPrefix, !vatValue && {color: Colors.MischkaGray}]}>%</Text>
                             <Input
                                 inputContainerStyle={{borderBottomWidth: 0, padding: 0}}
                                 placeholderTextColor='lightgray'
                                 placeholder='20'
                                 keyboardType='numeric'
                                 numberOfLines={1}
-                                value={taxRate}
-                                onChangeText={handleTaxRateChange}
+                                value={vatValue}
+                                onChangeText={value => dispatch({ type: ACTION_TYPES.VAT_VALUE_CHANGE, payload: value })}
                             />
                         </View>
                     </View>
@@ -79,9 +65,9 @@ export const Settings = (props) => {
                 <RNPickerSelect
                     style={pickerSelectStyles}
                     placeholder = {CURRENCY_PLACEHOLDER}
-                    value={currency}
-                    onValueChange={value => setCurrency(value)}
                     items={CURRENCIES}
+                    value={currency}
+                    onValueChange={value => dispatch({ type: ACTION_TYPES.CURRENCY_CHANGE, payload: value })}
                 />
             </View>
 
@@ -95,7 +81,7 @@ export const Settings = (props) => {
                     {
                         currency
                         &&
-                        <Text style={[styles.inputPrefix, !taxRate && { color: Colors.MischkaGray }]}>
+                        <Text style={[styles.inputPrefix, !limit && { color: Colors.MischkaGray }]}>
                             {currency}
                         </Text>
                     }
@@ -105,7 +91,7 @@ export const Settings = (props) => {
                         placeholderTextColor='lightgray'
                         keyboardType='numeric'
                         value={limit}
-                        onChangeText={newValue => setLimit(parseFloat(newValue))}
+                        onChangeText={newValue => dispatch({type: ACTION_TYPES.LIMIT_CHANGE, payload: newValue})}
                     />
                 </View>
             </View>

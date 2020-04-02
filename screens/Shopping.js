@@ -2,54 +2,40 @@ import React from 'react';
 import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
 import { Button, Icon, Input, Text } from 'react-native-elements';
 import { Colors } from '../common/colors';
+import { getTotalPriceSeverityColor } from '../common/helpers';
+import { StoreContext } from '../Store';
 
-const CURRENCY = '₽';
 const INCREMENT_AMOUNT_TYPES = [1, 3, 5];
 
-const PRICE_LIMIT = 8000;
-const PRICE_LIMIT_WARNING_THRESHOLD = PRICE_LIMIT * 0.9;
-
-const getTotalPriceSeverityColor = (price, limit) => {
-    const percentage = Math.round(price / limit * 100);
-    if (percentage < 30) {
-        return Colors.GrassGreen;
-    } else if (percentage < 50) {
-        return Colors.YellowDiamond;
-    } else if (percentage < 75) {
-        return Colors.FlushOrange;
-    } else {
-        return Colors.Amarant;
-    }
-};
-
 export const Shopping = (props) => {
+    const { state } = React.useContext(StoreContext);
+
+    // TODO take VAT into account
+    const { currency, limit, vatIncluded, vatValue } = state;
+
+    const unitPriceInput = React.useRef(null);
+
     const [totalPrice, setTotalPrice] = React.useState(0);
-    const [totalPriceSeverityColor, setTotalPriceSeverityColor] = React.useState(getTotalPriceSeverityColor(0, PRICE_LIMIT));
+    const [totalPriceSeverityColor, setTotalPriceSeverityColor] = React.useState(getTotalPriceSeverityColor(0, limit));
     const [price, setPrice] = React.useState(0);
     const [unitPrice, setUnitPrice] = React.useState('');
     const [amount, setAmount] = React.useState('1');
 
-    // TODO USE REDUCER
-
-    const unitPriceInput = React.useRef(null);
-
     // Whenever unit price or amount changes, recalculate item price
     React.useEffect(() => {
-        setPrice(parseFloat(amount || 0) * parseFloat(unitPrice || 0));
+        let price = parseFloat(amount || 0) * parseFloat(unitPrice || 0);
+        if (!vatIncluded && vatValue > 0) {
+            price = price * (1 + vatValue / 100);
+        }
+        setPrice(price);
     }, [unitPrice, amount]);
 
     // Whenever total price changes, reset inputs to default values
     React.useEffect(() => {
         setUnitPrice('');
         setAmount('1');
-        setTotalPriceSeverityColor(getTotalPriceSeverityColor(totalPrice, PRICE_LIMIT));
-
-        if (totalPrice >= PRICE_LIMIT) {
-            alert(`You have reached your limit of ${PRICE_LIMIT} ${CURRENCY}`);
-        } else if (totalPrice >= PRICE_LIMIT_WARNING_THRESHOLD) {
-            alert(`Caution! You are close to your price limit of ${PRICE_LIMIT} ${CURRENCY}`);
-        }
-    }, [totalPrice]);
+        setTotalPriceSeverityColor(getTotalPriceSeverityColor(totalPrice, limit));
+    }, [totalPrice, limit]);
 
     const reset = () => {
         setTotalPrice(0);
@@ -116,7 +102,7 @@ export const Shopping = (props) => {
                         containerStyle={{ marginTop: 32, minWidth: 200 }}
                         buttonStyle={{ borderRadius: 20 }}
                         titleStyle={{ fontSize: 30, marginLeft: 8 }}
-                        title={`${price} ${CURRENCY}`}
+                        title={`${price} ${currency || ''}`}
                         titleProps={{ numberOfLines: 1 }}
                         textStyle={{ fontSize: 20 }}
                         icon={<Icon
@@ -125,8 +111,18 @@ export const Shopping = (props) => {
                             color={Colors.White}
                             size={30}
                         />}
-                        onPress={() => setTotalPrice(totalPrice + price)}
+                        onPress={() => {
+                            setTotalPrice(totalPrice + price);
+                            unitPriceInput.current && unitPriceInput.current.focus();
+                        }}
                     />
+                    {
+                        (!vatIncluded && vatValue > 0)
+                        &&
+                        <Text style={{display: 'flex', alignSelf: 'center', marginTop: 4, fontFamily: 'Roboto-Light', color: Colors.FlushOrange}}>
+                            VAT of {vatValue}% included
+                        </Text>
+                    }
                 </KeyboardAvoidingView>
 
                 <View style={{ marginTop: 'auto', display: 'flex', flexDirection: 'row', alignSelf: 'center' }}>
