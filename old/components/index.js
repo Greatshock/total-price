@@ -1,0 +1,1 @@
+export { MSwitch } from './MSwitch';
