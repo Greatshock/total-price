@@ -1,9 +1,7 @@
 {
   "expo": {
-    "name": "Blank Template",
-    "slug": "TotalPrice",
-    "privacy": "public",
-    "sdkVersion": "36.0.0",
+    "name": "total-price",
+    "slug": "total-price",
     "platforms": [
       "ios",
       "android",
@@ -11,9 +9,10 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/assets/images/icon.png",
+    "scheme": "myapp",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -25,6 +24,9 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "web": {
+      "favicon": "./src/assets/images/favicon.png"
     }
   }
 }
