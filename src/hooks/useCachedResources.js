@@ -12,8 +12,10 @@ export default function useCachedResources() {
         SplashScreen.preventAutoHideAsync();
 
         // Load fonts
-        // await Font.loadAsync({
-        // });
+        await Font.loadAsync({
+          'antoutline': require('@ant-design/icons-react-native/fonts/antoutline.ttf'),
+          'antfill': require('@ant-design/icons-react-native/fonts/antfill.ttf')
+        });
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);

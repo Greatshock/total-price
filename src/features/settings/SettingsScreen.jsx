@@ -1,9 +1,25 @@
 import * as React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { List, InputItem } from '@ant-design/react-native';
 
-export const SettingsScreen = () => (
-    <Text>Settings</Text>
-)
+const Item = List.Item;
+const Brief = Item.Brief;
+
+export const SettingsScreen = ({ navigation }) => {
+  navigation.setOptions({ headerShown: false });
+
+  return (
+      <List renderHeader='Shopping'>
+        <Item>
+          Item
+          <Brief>Brief</Brief>
+        </Item>
+        <InputItem placeholder='Placeholder'>
+          Input Item
+        </InputItem>
+      </List>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
