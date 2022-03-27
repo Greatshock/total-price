@@ -26,10 +26,16 @@ export const settingsSlice = createSlice({
                 state.vat = { included: false, rate: payload };
             }
         },
+        setCurrency: (state, { payload }: PayloadAction<string>) => {
+            state.currency = payload;
+        },
+        setLimit: (state, { payload }: PayloadAction<number>) => {
+            state.limit = payload;
+        },
     },
 });
 
-export const { setVatRate } = settingsSlice.actions;
+export const { setVatRate, setCurrency, setLimit } = settingsSlice.actions;
 
 export const selectVat = ({ settings }: RootState) => settings.vat;
 export const selectCurrency = ({ settings }: RootState) => settings.currency;

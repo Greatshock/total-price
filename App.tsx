@@ -3,8 +3,19 @@ import { NativeBaseProvider, Box, StatusBar, extendTheme } from 'native-base';
 import { Navigation } from './src/navigation';
 import { store } from './src/store/store';
 
+const colorScheme = 'primary';
 const theme = extendTheme({
-    components: {},
+    components: {
+        Button: {
+            defaultProps: { colorScheme },
+        },
+        Input: {
+            defaultProps: { colorScheme },
+        },
+        Switch: {
+            defaultProps: { colorScheme },
+        },
+    },
 });
 
 export default function App() {

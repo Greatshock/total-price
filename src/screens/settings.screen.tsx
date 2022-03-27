@@ -6,6 +6,8 @@ import {
     selectCurrency,
     selectLimit,
     selectVat,
+    setCurrency,
+    setLimit,
     setVatRate,
 } from '../store/settings/settings.slice';
 
@@ -69,11 +71,20 @@ export const SettingsScreen = memo<HomeTabScreenProps<'Settings'>>(() => {
 
                 <FormControl>
                     <FormControl.Label>Currency</FormControl.Label>
-                    <Input maxWidth={120} placeholder='$' value={currency} />
+                    <Input
+                        maxWidth={120}
+                        placeholder='$'
+                        value={currency}
+                        onChangeText={(text) => {
+                            dispatch(setCurrency(text));
+                        }}
+                    />
                     <FormControl.HelperText>
                         Your local currency symbol. All prices will include it.
                     </FormControl.HelperText>
                 </FormControl>
+
+                <Divider />
 
                 <FormControl>
                     <FormControl.Label>Price Limit</FormControl.Label>
@@ -82,6 +93,9 @@ export const SettingsScreen = memo<HomeTabScreenProps<'Settings'>>(() => {
                         keyboardType='number-pad'
                         placeholder='5000'
                         value={limit?.toString()}
+                        onChangeText={(number) => {
+                            dispatch(setLimit(+number));
+                        }}
                     />
                     <FormControl.HelperText>
                         App will send alerts when you reach the limit.
